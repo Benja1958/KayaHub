@@ -8,6 +8,7 @@ sentry_sdk.init(
     dsn=settings.SENTRY_DSN,
     environment=settings.SENTRY_ENVIRONMENT,
     send_default_pii=False,
+    traces_sample_rate=1.0,  # lower to 0.1-0.2 once you have real traffic
 )
 
 # Import models so SQLAlchemy registers all tables before create_all()
