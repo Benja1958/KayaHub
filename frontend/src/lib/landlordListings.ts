@@ -49,7 +49,7 @@ export async function getMyListings(): Promise<Listing[]> {
 export async function createListing(
   payload: ListingPayload
 ): Promise<Listing> {
-  const response = await authFetch("/backend-api/listings/", {
+  const response = await authFetch("/backend-api/listings", {
     method: "POST",
 
     headers: {

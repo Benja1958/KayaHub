@@ -26,7 +26,8 @@ from app.dependencies.csrf import verify_csrf_token
 router = APIRouter()
 
 
-@router.post("/", response_model=ListingResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=ListingResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=ListingResponse, status_code=status.HTTP_201_CREATED, include_in_schema=False)
 def create_listing(
     listing_data: ListingCreate,
     db: Session = Depends(get_db),
@@ -53,7 +54,8 @@ def create_listing(
 
     return new_listing
 
-@router.get("/", response_model=List[ListingResponse])
+@router.get("", response_model=List[ListingResponse])
+@router.get("/", response_model=List[ListingResponse], include_in_schema=False)
 def get_listings(
     location: Optional[str] = None,
     min_rent: Optional[float] = None,
