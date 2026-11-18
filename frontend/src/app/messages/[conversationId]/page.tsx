@@ -175,7 +175,7 @@ export default function ConversationPage() {
       <>
         <Navbar />
 
-        <main className="mx-auto max-w-3xl px-6 py-10">
+        <main className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-6 sm:py-10">
           <p className="text-red-600">
             {error ||
               "Conversation not found"}
@@ -207,7 +207,7 @@ export default function ConversationPage() {
     <>
       <Navbar />
 
-      <main className="mx-auto max-w-3xl px-6 py-10">
+      <main className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-6 sm:py-10">
         <Link
           href={messagesHref}
           className="text-sm font-medium text-gray-600 hover:text-gray-900"
@@ -216,34 +216,36 @@ export default function ConversationPage() {
         </Link>
 
         <div className="mt-6 overflow-hidden rounded-2xl border border-gray-200 bg-white">
-          <header className="border-b border-gray-200 p-5">
-            <div className="flex items-center gap-4">
-              <img
-                src={coverImage ?? ""}
-                alt={
-                  conversation.listing.title
-                }
-                className="h-16 w-20 rounded-xl object-cover"
-              />
-
-              <div className="min-w-0 flex-1">
-                <h1 className="truncate text-lg font-semibold text-gray-900">
-                  {
-                    conversation.listing
-                      .title
+          <header className="border-b border-gray-200 p-4 sm:p-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+              <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
+                <img
+                  src={coverImage ?? ""}
+                  alt={
+                    conversation.listing.title
                   }
-                </h1>
+                  className="h-14 w-16 shrink-0 rounded-xl object-cover sm:h-16 sm:w-20"
+                />
 
-                <p className="mt-1 text-sm text-gray-600">
-                  {otherPerson.full_name}
-                </p>
+                <div className="min-w-0 flex-1">
+                  <h1 className="line-clamp-2 wrap-break-word text-lg font-semibold text-gray-900">
+                    {
+                      conversation.listing
+                        .title
+                    }
+                  </h1>
 
-                <p className="text-xs capitalize text-gray-400">
-                  {otherPerson.role}
-                </p>
+                  <p className="mt-1 truncate text-sm text-gray-600">
+                    {otherPerson.full_name}
+                  </p>
+
+                  <p className="text-xs capitalize text-gray-400">
+                    {otherPerson.role}
+                  </p>
+                </div>
               </div>
 
-              <div className="text-right">
+              <div className="flex shrink-0 items-baseline gap-1 sm:block sm:text-right">
                 <p className="font-semibold text-green-800">
                   KES{" "}
                   {conversation.listing
@@ -268,7 +270,7 @@ export default function ConversationPage() {
           </header>
 
           <div className="flex min-h-[520px] flex-col">
-            <div className="flex-1 space-y-4 overflow-y-auto p-5">
+            <div className="flex-1 space-y-4 overflow-y-auto p-4 sm:p-5">
               {conversation.messages.map(
                 (message) => {
                   const isMine =
@@ -285,13 +287,13 @@ export default function ConversationPage() {
                       }`}
                     >
                       <div
-                        className={`max-w-[75%] rounded-2xl px-4 py-3 ${
+                        className={`min-w-0 max-w-[75%] rounded-2xl px-4 py-3 ${
                           isMine
                             ? "bg-green-800 text-white"
                             : "bg-gray-100 text-gray-900"
                         }`}
                       >
-                        <p className="leading-6">
+                        <p className="wrap-break-word leading-6">
                           {message.content}
                         </p>
 
@@ -321,20 +323,20 @@ export default function ConversationPage() {
 
             <form
               onSubmit={handleSubmit}
-              className="flex gap-3 border-t border-gray-200 p-4"
+              className="flex gap-2 border-t border-gray-200 p-3 sm:gap-3 sm:p-4"
             >
               <input
                 name="content"
                 type="text"
                 placeholder="Type a message..."
                 autoComplete="off"
-                className="flex-1 rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-green-700"
+                className="min-w-0 flex-1 rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-green-700"
               />
 
               <button
                 type="submit"
                 disabled={sending}
-                className="rounded-xl bg-green-800 px-5 py-3 font-medium text-white hover:bg-green-900 disabled:opacity-50"
+                className="shrink-0 rounded-xl bg-green-800 px-4 py-3 font-medium text-white hover:bg-green-900 disabled:opacity-50 sm:px-5"
               >
                 {sending
                   ? "Sending..."
