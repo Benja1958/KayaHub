@@ -39,20 +39,20 @@ export default function ConversationCard({
   return (
     <Link
       href={`/messages/${conversation.id}`}
-      className="block rounded-2xl border border-gray-200 bg-white p-4 transition hover:border-gray-300 hover:shadow-sm"
+      className="block max-w-full rounded-2xl border border-gray-200 bg-white p-3 transition sm:p-4 hover:border-gray-300 hover:shadow-sm"
     >
-      <div className="flex gap-4">
+      <div className="flex gap-3 sm:gap-4">
         <img
           src={coverImage ?? ""}
           alt={conversation.listing.title}
-          className="h-24 w-28 shrink-0 rounded-xl object-cover"
+          className="h-16 w-16 shrink-0 rounded-xl object-cover sm:h-24 sm:w-28"
         />
 
         <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start justify-between gap-2 sm:gap-4">
             <div className="min-w-0">
               <h2
-                className={`truncate ${
+                className={`line-clamp-2 wrap-break-word ${
                   conversation.unread_count > 0
                     ? "font-bold text-gray-950"
                     : "font-semibold text-gray-900"
@@ -85,9 +85,9 @@ export default function ConversationCard({
             )}
           </div>
 
-          <div className="mt-3 flex items-end justify-between gap-4">
-            <div className="min-w-0">
-              <p className="text-sm font-medium text-gray-700">
+          <div className="mt-2 flex items-end justify-between gap-2 sm:mt-3 sm:gap-4">
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-gray-700">
                 {otherPerson.full_name}
               </p>
 
@@ -119,7 +119,7 @@ export default function ConversationCard({
             )}
           </div>
 
-          <p className="mt-3 text-sm font-semibold text-green-800">
+          <p className="mt-2 text-sm font-semibold text-green-800 sm:mt-3">
             KES{" "}
             {conversation.listing.monthly_rent.toLocaleString()}
             <span className="font-normal text-gray-500">
