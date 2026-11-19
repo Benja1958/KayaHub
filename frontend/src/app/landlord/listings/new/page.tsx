@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 
 import ListingForm from "@/components/ListingForm";
 import Navbar from "@/components/Navbar";
-import { toast } from "sonner";
 
 import {
   createListing,
@@ -13,24 +12,41 @@ import {
 } from "@/lib/landlordListings";
 
 import {
-  uploadListingImages,
+  uploadListingImagesIndividually,
 } from "@/lib/listingImages";
+
+import {
+  ImageIssue,
+  toastUploadSummary,
+} from "@/lib/image";
 
 export default function NewListingPage() {
   const router = useRouter();
 
   async function handleCreate(
     payload: ListingPayload,
-    images: File[]
+    images: File[],
+    rejectedImages: ImageIssue[]
   ) {
     const listing =
       await createListing(payload);
 
-    await uploadListingImages(
-      listing.id,
-      images
-    );
-    toast.success(
+    const { uploaded, failed } =
+      await uploadListingImagesIndividually(
+        listing.id,
+        images
+      );
+
+    const issues = [
+      ...rejectedImages,
+      ...failed,
+    ];
+
+    toastUploadSummary(
+      images.length +
+        rejectedImages.length,
+      uploaded.length,
+      issues,
       "Property created successfully"
     );
 
