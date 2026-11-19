@@ -46,7 +46,7 @@ export default function FavoritesPage() {
     <>
       <Navbar />
 
-      <main className="mx-auto max-w-7xl px-6 py-10">
+      <main className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6">
         <h1 className="text-3xl font-bold text-gray-900">
           Saved Properties
         </h1>
@@ -56,7 +56,7 @@ export default function FavoritesPage() {
         </p>
 
         {loading ? (
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({
               length: 6,
             }).map((_, index) => (
@@ -76,7 +76,7 @@ export default function FavoritesPage() {
             />
           </div>
         ) : (
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
             {favorites.map(
               (favorite) => (
                 <PropertyCard

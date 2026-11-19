@@ -76,15 +76,16 @@ export default async function TenantPage({
     <>
       <Navbar />
 
-      <main className="mx-auto w-full max-w-7xl px-4 py-6 md:w-auto md:px-6 md:py-10">
+      <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 md:py-10">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">
             Find your next home
           </h1>
 
           <p className="mt-1 text-sm text-gray-600 md:mt-2 md:text-base">
-            Browse verified rental
-            properties.
+            Browse rental properties
+            across Kenya. Look for the
+            Verified badge.
           </p>
         </div>
 
