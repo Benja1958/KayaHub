@@ -16,6 +16,7 @@ import {
   X,
 } from "lucide-react";
 
+import BrandLogo from "@/components/BrandLogo";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
@@ -129,20 +130,16 @@ export default function Navbar() {
       className="relative border-b border-gray-200 bg-white"
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6 md:py-4">
-        <Link
+        <BrandLogo
           href={
             isAuthenticated
               ? homeHref
               : "/"
           }
-          className="flex items-center gap-2"
-        >
-          <House className="h-6 w-6 text-indigo-600 md:h-7 md:w-7" />
-
-          <span className="text-xl font-bold text-gray-900 md:text-2xl">
-            KayaHub
-          </span>
-        </Link>
+          size={28}
+          iconClassName="md:h-8 md:w-8"
+          textClassName="text-xl font-bold text-gray-900 md:text-2xl"
+        />
 
         <div className="hidden items-center gap-4 md:flex">
           {!loading &&
