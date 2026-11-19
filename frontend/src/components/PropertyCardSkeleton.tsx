@@ -18,7 +18,7 @@ export default function PropertyCardSkeleton() {
         </div>
 
         <div className="mt-0.5 flex h-5 items-center">
-          <div className="h-3 w-28 animate-pulse rounded bg-gray-200" />
+          <div className="h-3.5 w-28 animate-pulse rounded bg-gray-200" />
         </div>
       </div>
     </div>

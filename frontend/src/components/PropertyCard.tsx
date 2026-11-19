@@ -11,6 +11,10 @@ import {
 import { Listing } from "@/types/listing";
 import FavoriteButton from "@/components/FavoriteButton";
 import { optimizeCloudinaryImage } from "@/lib/cloudinary";
+import {
+  formatLocationForDisplay,
+  formatTitleForDisplay,
+} from "@/lib/displayText";
 
 type PropertyCardProps = {
   property: Listing;
@@ -132,7 +136,7 @@ export default function PropertyCard({
             )}
           </span>
 
-          <span className="text-sm font-medium text-slate-500">
+          <span className="text-sm font-medium text-slate-600">
             /month
           </span>
         </p>
@@ -158,19 +162,23 @@ export default function PropertyCard({
           </span>
         </p>
 
-        <p className="mt-1 flex min-w-0 items-center gap-1 text-sm leading-5 text-slate-600">
+        <p className="mt-1 flex min-w-0 items-center gap-1 text-sm leading-5 text-slate-700">
           <MapPin
             aria-hidden="true"
             className="h-3.5 w-3.5 shrink-0"
           />
 
           <span className="truncate">
-            {property.location}
+            {formatLocationForDisplay(
+              property.location
+            )}
           </span>
         </p>
 
-        <h2 className="mt-0.5 truncate text-[13px] leading-5 text-slate-400">
-          {property.title}
+        <h2 className="mt-0.5 truncate text-sm font-medium leading-5 text-slate-600">
+          {formatTitleForDisplay(
+            property.title
+          )}
         </h2>
       </div>
     </Link>
