@@ -1,7 +1,8 @@
 import Link from "next/link";
+
+import BrandLogo from "@/components/BrandLogo";
 import {
   Building2,
-  House,
   MapPin,
   MessageCircle,
   ShieldCheck,
@@ -24,15 +25,11 @@ export default function HomePage() {
 
         {/* Top bar */}
         <header className="flex items-center justify-between px-6 py-5 md:px-10">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-500">
-              <House className="h-5 w-5 text-white" />
-            </div>
-
-            <span className="text-xl font-semibold tracking-tight">
-              KayaHub
-            </span>
-          </Link>
+          <BrandLogo
+            href="/"
+            size={32}
+            textClassName="text-xl font-semibold tracking-tight"
+          />
 
           <span className="hidden text-sm text-white/80 sm:block">
             Kenya&apos;s Rental Platform
