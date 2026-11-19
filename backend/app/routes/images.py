@@ -1,5 +1,8 @@
+import logging
 from typing import Annotated
+
 import cloudinary.uploader
+import sentry_sdk
 from sqlalchemy import func
 
 from fastapi import (
@@ -22,18 +25,19 @@ from app.schemas.listing_image import ListingImageResponse
 
 # Importing this module configures the Cloudinary SDK.
 from app.utils import cloudinary as cloudinary_config
+from app.utils.image_upload import (
+    IMAGE_UPLOAD_FAILED_MESSAGE,
+    LISTING_IMAGE_MAX_DIMENSION,
+    size_limit_transformation,
+    validate_image_upload,
+)
 
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
 MAX_IMAGES = 10
-MAX_FILE_SIZE = 5 * 1024 * 1024
-
-ALLOWED_CONTENT_TYPES = {
-    "image/jpeg",
-    "image/png",
-    "image/webp",
-}
 
 
 @router.post(
@@ -101,37 +105,24 @@ def upload_listing_images(
             detail=f"A listing can have at most {MAX_IMAGES} images",
         )
 
+    # Validate every file before anything is sent to Cloudinary.
+    for file in files:
+        validate_image_upload(file)
+
     uploaded_images = []
     uploaded_public_ids = []
 
     try:
         for index, file in enumerate(files):
-            if file.content_type not in ALLOWED_CONTENT_TYPES:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=(
-                        f"{file.filename} has an unsupported file type. "
-                        "Only JPG, PNG, and WEBP are allowed."
-                    ),
-                )
-
-            contents = file.file.read()
-
-            if len(contents) > MAX_FILE_SIZE:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=(
-                        f"{file.filename} exceeds the "
-                        "5 MB file size limit."
-                    ),
-                )
-
             file.file.seek(0)
 
             result = cloudinary.uploader.upload(
                 file.file,
                 folder=f"nyumbalink/listings/{listing_id}",
                 resource_type="image",
+                transformation=size_limit_transformation(
+                    LISTING_IMAGE_MAX_DIMENSION
+                ),
             )
 
             public_id = result["public_id"]
@@ -170,7 +161,13 @@ def upload_listing_images(
 
         raise
 
-    except Exception:
+    except Exception as error:
+        logger.exception(
+            "Failed to upload images for listing %s",
+            listing_id,
+        )
+        sentry_sdk.capture_exception(error)
+
         db.rollback()
 
         for public_id in uploaded_public_ids:
@@ -181,7 +178,7 @@ def upload_listing_images(
 
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to upload images",
+            detail=IMAGE_UPLOAD_FAILED_MESSAGE,
         )
 
 

@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import (
     APIRouter,
     Depends,
@@ -8,6 +10,7 @@ from fastapi import (
 )
 
 import cloudinary.uploader
+import sentry_sdk
 
 from sqlalchemy.orm import Session
 
@@ -19,6 +22,14 @@ from app.schemas.user import (
     LandlordProfileResponse,
     LandlordProfileUpdate,
 )
+from app.utils.image_upload import (
+    IMAGE_UPLOAD_FAILED_MESSAGE,
+    PROFILE_IMAGE_MAX_DIMENSION,
+    size_limit_transformation,
+    validate_image_upload,
+)
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -139,22 +150,7 @@ async def upload_landlord_profile_image(
             ),
         )
 
-    if not file.content_type:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid image file",
-        )
-
-    if not file.content_type.startswith(
-        "image/"
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=(
-                "Profile image must "
-                "be an image file"
-            ),
-        )
+    validate_image_upload(file)
 
     try:
         upload_result = (
@@ -170,6 +166,9 @@ async def upload_landlord_profile_image(
                 ),
                 overwrite=True,
                 resource_type="image",
+                transformation=size_limit_transformation(
+                    PROFILE_IMAGE_MAX_DIMENSION
+                ),
             )
         )
 
@@ -184,10 +183,7 @@ async def upload_landlord_profile_image(
                 status_code=(
                     status.HTTP_500_INTERNAL_SERVER_ERROR
                 ),
-                detail=(
-                    "Failed to upload "
-                    "profile image"
-                ),
+                detail=IMAGE_UPLOAD_FAILED_MESSAGE,
             )
 
         current_user.profile_image_url = (
@@ -207,13 +203,16 @@ async def upload_landlord_profile_image(
     except HTTPException:
         raise
 
-    except Exception:
+    except Exception as error:
+        logger.exception(
+            "Failed to upload profile image for user %s",
+            current_user.id,
+        )
+        sentry_sdk.capture_exception(error)
+
         raise HTTPException(
             status_code=(
                 status.HTTP_500_INTERNAL_SERVER_ERROR
             ),
-            detail=(
-                "Failed to upload "
-                "profile image"
-            ),
+            detail=IMAGE_UPLOAD_FAILED_MESSAGE,
         )

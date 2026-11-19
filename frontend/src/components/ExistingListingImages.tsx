@@ -18,8 +18,14 @@ import { toast } from "sonner";
 import {
   deleteListingImage,
   setListingCoverImage,
-  uploadListingImages,
+  uploadListingImagesIndividually,
 } from "@/lib/listingImages";
+
+import {
+  LISTING_IMAGE_MAX_DIMENSION,
+  prepareImagesForUpload,
+  toastUploadSummary,
+} from "@/lib/image";
 
 type ExistingListingImagesProps = {
   listingId: number;
@@ -41,6 +47,9 @@ export default function ExistingListingImages({
     useState<number | null>(null);
 
   const [uploading, setUploading] =
+    useState(false);
+
+  const [preparing, setPreparing] =
     useState(false);
 
   const [error, setError] = useState("");
@@ -70,29 +79,47 @@ export default function ExistingListingImages({
     }
 
     try {
-      setUploading(true);
       setError("");
       setSuccess("");
+      setPreparing(true);
 
-      const uploadedImages =
-        await uploadListingImages(
-          listingId,
-          newFiles
+      const { ready, rejected } =
+        await prepareImagesForUpload(
+          newFiles,
+          {
+            maxDimension:
+              LISTING_IMAGE_MAX_DIMENSION,
+          }
         );
 
-      onImagesChange([
-        ...images,
-        ...uploadedImages,
-      ]);
+      setPreparing(false);
+      setUploading(true);
+
+      const { uploaded, failed } =
+        await uploadListingImagesIndividually(
+          listingId,
+          ready
+        );
+
+      if (uploaded.length > 0) {
+        onImagesChange([
+          ...images,
+          ...uploaded,
+        ]);
+      }
 
       setNewFiles([]);
-      toast.success(
-      `${uploadedImages.length} photo${
-        uploadedImages.length === 1
-          ? ""
-          : "s"
-      } uploaded successfully`
-    );
+
+      toastUploadSummary(
+        newFiles.length,
+        uploaded.length,
+        [...rejected, ...failed],
+        `${uploaded.length} photo${
+          uploaded.length === 1
+            ? ""
+            : "s"
+        } uploaded successfully`
+      );
     } catch (error) {
       toast.error(
         error instanceof Error
@@ -100,6 +127,7 @@ export default function ExistingListingImages({
           : "Failed to upload images"
       );
     } finally {
+      setPreparing(false);
       setUploading(false);
     }
   }
@@ -345,6 +373,7 @@ export default function ExistingListingImages({
               type="button"
               onClick={handleUpload}
               disabled={
+                preparing ||
                 uploading ||
                 newFiles.length === 0
               }
@@ -352,7 +381,11 @@ export default function ExistingListingImages({
             >
               <Upload className="h-4 w-4" />
 
-              {uploading
+              {preparing
+                ? newFiles.length === 1
+                  ? "Preparing image..."
+                  : "Preparing images..."
+                : uploading
                 ? "Uploading..."
                 : `Upload ${
                     newFiles.length || ""

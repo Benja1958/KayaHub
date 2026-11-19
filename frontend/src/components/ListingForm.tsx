@@ -6,15 +6,28 @@ import ImageUploader from "@/components/ImageUploader";
 
 import { ListingPayload } from "@/lib/landlordListings";
 
+import {
+  describeImageIssue,
+  ImageIssue,
+  LISTING_IMAGE_MAX_DIMENSION,
+  prepareImagesForUpload,
+} from "@/lib/image";
+
 import { toast } from "sonner";
 
 type ListingFormProps = {
   initialValues?: Partial<ListingPayload>;
   submitLabel: string;
 
+  /*
+   * `images` are already type-checked and compressed.
+   * `rejectedImages` lists selected photos that couldn't be used,
+   * so the caller can include them in its upload summary.
+   */
   onSubmit: (
     payload: ListingPayload,
-    images: File[]
+    images: File[],
+    rejectedImages: ImageIssue[]
   ) => Promise<void>;
 
   requireImages?: boolean;
@@ -27,6 +40,8 @@ export default function ListingForm({
   requireImages = false,
 }: ListingFormProps) {
   const [loading, setLoading] = useState(false);
+  const [preparingImages, setPreparingImages] =
+    useState(false);
   const [error, setError] = useState("");
 
   const [images, setImages] =
@@ -94,9 +109,48 @@ export default function ListingForm({
     };
 
     try {
+      let readyImages: File[] = [];
+      let rejectedImages: ImageIssue[] = [];
+
+      if (images.length > 0) {
+        setPreparingImages(true);
+
+        try {
+          ({
+            ready: readyImages,
+            rejected: rejectedImages,
+          } = await prepareImagesForUpload(
+            images,
+            {
+              maxDimension:
+                LISTING_IMAGE_MAX_DIMENSION,
+            }
+          ));
+        } finally {
+          setPreparingImages(false);
+        }
+      }
+
+      if (
+        requireImages &&
+        readyImages.length === 0
+      ) {
+        toast.error(
+          [
+            "None of your photos could be used.",
+            ...rejectedImages.map(
+              describeImageIssue
+            ),
+          ].join(" ")
+        );
+
+        return;
+      }
+
       await onSubmit(
         payload,
-        images
+        readyImages,
+        rejectedImages
       );
     } catch (error) {
     const message =
@@ -279,9 +333,13 @@ export default function ListingForm({
         disabled={loading}
         className="w-full rounded-lg bg-green-800 py-3 font-semibold text-white hover:bg-green-900 disabled:opacity-50"
       >
-        {loading
-          ? "Saving..."
-          : submitLabel}
+        {preparingImages
+          ? images.length === 1
+            ? "Preparing image..."
+            : "Preparing images..."
+          : loading
+            ? "Saving..."
+            : submitLabel}
       </button>
     </form>
   );

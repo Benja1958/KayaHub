@@ -1,4 +1,8 @@
 import { authFetch } from "@/lib/authFetch";
+import {
+  getUploadErrorMessage,
+  toUploadNetworkError,
+} from "@/lib/image";
 
 const API_URL =
   process.env.NODE_ENV === "development"
@@ -99,23 +103,27 @@ export async function uploadLandlordProfileImage(
     file
   );
 
-  const response =
-    await authFetch(
-      "/backend-api/landlords/me/profile-image",
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
+  let response: Response;
+
+  try {
+    response =
+      await authFetch(
+        "/backend-api/landlords/me/profile-image",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+  } catch (error) {
+    throw toUploadNetworkError(error);
+  }
 
   if (!response.ok) {
-    const data =
-      await response.json();
-
     throw new Error(
-      typeof data.detail === "string"
-        ? data.detail
-        : "Failed to upload profile image"
+      await getUploadErrorMessage(
+        response,
+        "Failed to upload image. Please try again."
+      )
     );
   }
 

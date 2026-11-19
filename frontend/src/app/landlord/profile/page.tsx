@@ -31,6 +31,12 @@ import {
   uploadLandlordProfileImage,
 } from "@/lib/landlordProfile";
 
+import {
+  describeImageIssue,
+  prepareImageForUpload,
+  PROFILE_IMAGE_MAX_DIMENSION,
+} from "@/lib/image";
+
 
 export default function LandlordProfilePage() {
   const {
@@ -69,6 +75,11 @@ export default function LandlordProfilePage() {
   const [
     uploadingImage,
     setUploadingImage,
+  ] = useState(false);
+
+  const [
+    preparingImage,
+    setPreparingImage,
   ] = useState(false);
 
   const [
@@ -194,16 +205,36 @@ export default function LandlordProfilePage() {
       return;
     }
 
-    if (
-      !file.type.startsWith(
-        "image/"
-      )
-    ) {
+    // Allows selecting the same file again later.
+    event.target.value = "";
+
+    let preparedFile: File;
+
+    try {
+      setPreparingImage(true);
+
+      preparedFile =
+        await prepareImageForUpload(
+          file,
+          {
+            maxDimension:
+              PROFILE_IMAGE_MAX_DIMENSION,
+          }
+        );
+    } catch (error) {
       toast.error(
-        "Please select an image file"
+        describeImageIssue({
+          fileName: file.name,
+          reason:
+            error instanceof Error
+              ? error.message
+              : "This image couldn't be processed.",
+        })
       );
 
       return;
+    } finally {
+      setPreparingImage(false);
     }
 
     try {
@@ -211,7 +242,7 @@ export default function LandlordProfilePage() {
 
       const result =
         await uploadLandlordProfileImage(
-          file
+          preparedFile
         );
 
       setProfile(
@@ -238,12 +269,6 @@ export default function LandlordProfilePage() {
       );
     } finally {
       setUploadingImage(false);
-
-      /*
-       * Allows selecting the same
-       * file again later.
-       */
-      event.target.value = "";
     }
   }
 
@@ -412,18 +437,24 @@ export default function LandlordProfilePage() {
               )}
 
               <label
-                className="absolute bottom-0 right-0 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-2 border-white bg-gray-950 text-white shadow transition hover:bg-gray-800"
+                className={`absolute bottom-0 right-0 flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-gray-950 text-white shadow transition ${
+                  preparingImage ||
+                  uploadingImage
+                    ? "cursor-not-allowed opacity-50"
+                    : "cursor-pointer hover:bg-gray-800"
+                }`}
                 title="Change profile photo"
               >
                 <Camera className="h-4 w-4" />
 
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/webp"
                   onChange={
                     handleImageChange
                   }
                   disabled={
+                    preparingImage ||
                     uploadingImage
                   }
                   className="hidden"
@@ -473,6 +504,12 @@ export default function LandlordProfilePage() {
                 )}
 
               </div>
+
+              {preparingImage && (
+                <p className="mt-3 text-sm text-gray-500">
+                  Preparing image...
+                </p>
+              )}
 
               {uploadingImage && (
                 <p className="mt-3 text-sm text-gray-500">
