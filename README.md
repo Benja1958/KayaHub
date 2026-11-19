@@ -1,47 +1,107 @@
 # KayaHub
 
-KayaHub is a mobile-first rental housing platform designed to connect tenants in Kenya with landlords who are posting available housing options. The goal is to make the rental search process easier, more transparent, and more trustworthy by giving tenants a simple way to browse listings and giving landlords a clean platform to manage their properties.
+**Live site:** [kayahub.co.ke](https://kayahub.co.ke)
 
-## Project Overview
+KayaHub is a mobile-first rental housing marketplace for Kenya, built around trust. It connects tenants with landlords who post available properties, and gives admins the tools to review listings and keep the platform safe.
 
-Finding rental housing in Kenya can be difficult because listings are often scattered across WhatsApp groups, Facebook pages, agents, posters, and informal networks. KayaHub aims to centralize this process by allowing landlords to post available properties and tenants to search for housing based on location, rent, and property details.
+## Why KayaHub
 
-The project is currently in early development. We are starting with core authentication and property listing features before adding advanced functionality such as image uploads, landlord verification, admin approval, favorites, inquiries, and search filters.
+Finding a rental in Kenya is hard. Listings are scattered across WhatsApp groups, Facebook pages, agents, posters and informal networks, and scams are a real risk. KayaHub puts listings in one place and adds trust layers: admin review of every listing, a Verified badge for properties an admin has checked, and a way for tenants to report suspicious listings.
 
-## Core Features
+## Features
 
-### Tenant Features
+### Tenants
 - Create an account and log in
-- Browse available rental listings
-- View property details
-- Search and filter housing options
+- Browse listings in a compact, mobile-friendly card grid
+- Search by location and filter by price, bedrooms and bathrooms
 - Save favorite listings
-- Contact landlords about available properties
+- Message landlords directly
+- Report suspicious listings
 
-### Landlord Features
+### Landlords
 - Create an account and log in
-- Add property listings
-- Edit and manage listings
-- View tenant interest and inquiries
-- Track listed properties from a landlord dashboard
+- Post and edit property listings with photos (compressed in the browser and validated on the server)
+- Add a profile photo
+- Manage listings and conversations from a dashboard
 
-### Admin Features
-- Review new property listings
-- Approve or reject suspicious listings
+### Admins
+- Review new listings, then approve or reject them
+- Mark approved properties as Verified, or remove the badge
+- Handle reports, including suspending reported listings
 - Manage users and listings
-- Help maintain trust and safety on the platform
 
-## Tech Stack
+### Trust and safety
+- Listings start unverified. Only an admin can award the Verified badge, and rejecting or suspending a listing removes it
+- Image uploads are checked for type and size on both the client and the server
+- CSRF protection on sensitive actions
+- Error monitoring with Sentry
+
+## Tech stack
+
+**Backend** (`backend/`)
+- FastAPI, Uvicorn
+- PostgreSQL, SQLAlchemy, Alembic migrations
+- Pydantic
+- JWT authentication
+- Cloudinary for image storage
+- Sentry for error monitoring
+
+**Frontend** (`frontend/`)
+- Next.js (App Router) with TypeScript
+- Tailwind CSS
+- Mobile-first, responsive design
+
+**Hosting**
+- Frontend on Vercel
+- Backend and database on Render
+
+## Project structure
+
+```
+backend/    FastAPI app (app/models, app/routes, app/utils, alembic migrations)
+frontend/   Next.js app (src/app pages, src/components, src/lib API helpers)
+```
+
+## Running locally
 
 ### Backend
-- FastAPI
-- PostgreSQL
-- SQLAlchemy
-- JWT authentication
-- Pydantic
-- Uvicorn
 
-### Mobile Frontend
-- React Native
-- Expo
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env        # fill in your own values
+alembic upgrade head
+uvicorn app.main:app --reload
+```
 
+### Frontend
+
+```bash
+cd frontend
+npm install
+cp .env.example .env.local  # set NEXT_PUBLIC_API_URL and API_SERVER_URL
+npm run dev
+```
+
+Never commit `.env` files or secrets.
+
+## Roadmap
+
+Next up is a deeper trust layer:
+- Phone number and government ID verification for landlords
+- Verified landlord badge
+- Public landlord profile pages
+- Landlord analytics (views, inquiries)
+- Admin analytics
+
+Longer term: notifications, saved searches, and more search filters.
+
+## Status
+
+KayaHub is live and in a closed beta with a small group of testers.
+
+## Author
+
+Built by Benjamin Karanja.
