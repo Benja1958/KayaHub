@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import BrandLogo from "@/components/BrandLogo";
 import {
+  BadgeCheck,
   Building2,
   MapPin,
   MessageCircle,
@@ -40,7 +41,7 @@ export default function HomePage() {
         <section className="flex flex-1 flex-col items-center justify-center px-6 pb-24 pt-8 text-center">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm backdrop-blur-sm">
             <MapPin className="h-4 w-4 text-amber-400" />
-            Across 47 Counties · Kenya
+            Growing across Kenya&apos;s 47 counties
           </div>
 
           <h1 className="max-w-3xl font-serif text-5xl font-bold leading-tight md:text-7xl">
@@ -51,8 +52,9 @@ export default function HomePage() {
           </h1>
 
           <p className="mt-5 max-w-2xl text-lg leading-7 text-white/80">
-            KayaHub connects tenants with verified landlords across Kenya —
-            from Nairobi to Kisumu, Mombasa to Eldoret.
+            KayaHub connects tenants with landlords across Kenya. Our team
+            reviews listings, and we&apos;re rolling out landlord ID
+            verification so you can rent with confidence.
           </p>
 
           {/* Role cards */}
@@ -69,8 +71,8 @@ export default function HomePage() {
               </h2>
 
               <p className="mt-2 text-sm leading-6 text-gray-600">
-                Browse verified listings, filter by county and town, save
-                favourites, and chat with landlords.
+                Browse reviewed listings, search by location, filter by price,
+                bedrooms and bathrooms, save favourites, and chat with landlords.
               </p>
 
               <div className="mt-5 space-y-3">
@@ -129,12 +131,12 @@ export default function HomePage() {
           <div className="mx-auto flex max-w-5xl flex-col items-center justify-center gap-4 text-sm text-white/75 md:flex-row md:gap-10">
             <div className="flex items-center gap-2">
               <ShieldCheck className="h-4 w-4 text-amber-400" />
-              ID-verified landlords
+              Admin-reviewed listings
             </div>
 
             <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-amber-400" />
-              15+ counties covered
+              <BadgeCheck className="h-4 w-4 text-amber-400" />
+              Landlord ID checks coming soon
             </div>
 
             <div className="flex items-center gap-2">

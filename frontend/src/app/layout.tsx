@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     template: "%s | KayaHub",
   },
   description:
-    "Find and rent verified homes across Kenya.",
+    "Find and rent reviewed homes across Kenya.",
   applicationName: "KayaHub",
   openGraph: {
     type: "website",
@@ -32,14 +32,14 @@ export const metadata: Metadata = {
     siteName: "KayaHub",
     title: "KayaHub — Find your next home with confidence",
     description:
-      "Find and rent verified homes across Kenya.",
+      "Find and rent reviewed homes across Kenya.",
     locale: "en_KE",
   },
   twitter: {
     card: "summary_large_image",
     title: "KayaHub — Find your next home with confidence",
     description:
-      "Find and rent verified homes across Kenya.",
+      "Find and rent reviewed homes across Kenya.",
   },
 };
 
